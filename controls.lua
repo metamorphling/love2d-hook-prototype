@@ -5,6 +5,10 @@ function love.mousepressed(x, y, button)
     shoot:cutRope()
     shoot:shoot()
 	end
+  if button == 2 then
+    print(player.body:getX())
+    print(camera.x)
+	end
 end
 
 function controls:keyBoardPress()

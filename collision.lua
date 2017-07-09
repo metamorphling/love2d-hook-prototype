@@ -17,11 +17,11 @@ function beginContact(a, b, coll)
       b:getBody():setAwake( false )
       b:getBody():setGravityScale( 0 )
     end
-    if a:getUserData() == "Block" then
+    if a:getUserData() == "Bar" then
       print("grapple")
       grapple = {grappled = true, fixture = a}
     end
-    if b:getUserData() == "Block" then 
+    if b:getUserData() == "Bar" then 
       print("grapple")
       grapple = {grappled = true, fixture = b}
     end

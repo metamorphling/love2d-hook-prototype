@@ -29,4 +29,5 @@ function love.update(dt)
   shoot:processHook()
   world:update(dt)
   controls:keyBoardPress()
+  environment:update()
 end

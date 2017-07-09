@@ -6,6 +6,8 @@ environment.screenWidth = love.graphics.getWidth( )
 environment.screenHeight = love.graphics.getHeight( )
 environment.screenCenter = { x = environment.screenWidth/2, y = environment.screenHeight/2 }
 
+
+
 function environment:initWorld()
   world = love.physics.newWorld(0, 200, true) 
   world:setCallbacks(beginContact, endContact, preSolve, postSolve)
@@ -15,34 +17,70 @@ function environment:initWorld()
   persisting = 0
 end
 
+function addBlock(display, objType)
+  local obj = {}
+  obj.display = display
+  obj.body = love.physics.newBody(world, obj.display.x ,obj.display.y, "static")
+  obj.shape = love.physics.newRectangleShape(obj.display.width, obj.display.height)
+  obj.fixture = love.physics.newFixture(obj.body, obj.shape)
+  if objType == "Floor" then
+    obj.fixture:setUserData("Floor")
+    floor[#floor + 1] = obj
+  end
+  if objType == "StartingBlock" then
+    obj.fixture:setUserData("StartingBlock")
+    startingBlock[#startingBlock + 1] = obj
+  end
+  if objType == "Bar" then
+    obj.fixture:setUserData("Bar")
+    bar[#bar + 1] = obj
+  end
+end
+
+function addStartingBlock(x,y)
+    local display = {x=x, y=y, width=environment.screenWidth/6, height=environment.screenHeight/2}
+    addBlock(display, "Floor")
+end
+
+function addFloor(x,y)
+    local display = {x=x, y=y, width=environment.screenWidth, height=environment.screenHeight/8}
+    addBlock(display, "StartingBlock")
+end
+
+function addBar(x,y)
+    local display = {x=400, y=100, width=50, height=10}
+    addBlock(display, "Bar")
+end
+
+function destroyBlock(blockType, i)
+  
+end
+
 function environment:initObjects()
   startingBlock = {}
-    startingBlock.display = {x=environment.screenWidth/6 - environment.screenWidth/12, y=environment.screenHeight/2 + environment.screenHeight/4, width=environment.screenWidth/6, height=environment.screenHeight/2}
-    startingBlock.body = love.physics.newBody(world, startingBlock.display.x ,startingBlock.display.y, "static")
-    startingBlock.shape = love.physics.newRectangleShape(startingBlock.display.width, startingBlock.display.height)
-    startingBlock.fixture = love.physics.newFixture(startingBlock.body, startingBlock.shape)
-    startingBlock.fixture:setUserData("StartingBlock")
-    
   floor = {}
-    floor.display = {x=environment.screenWidth/2, y=environment.screenHeight - environment.screenHeight/16, width=environment.screenWidth, height=environment.screenHeight/8}
-    floor.body = love.physics.newBody(world, floor.display.x ,floor.display.y, "static")
-    floor.shape = love.physics.newRectangleShape(floor.display.width, floor.display.height)
-    floor.fixture = love.physics.newFixture(floor.body, floor.shape)
-    floor.fixture:setUserData("Floor")
+  bar = {}
   
-  collider = {}
-    collider.display = {x=400, y=100, width=50, height=10}
-    collider.body = love.physics.newBody(world, collider.display.x ,collider.display.y, "static")
-    collider.shape = love.physics.newRectangleShape(collider.display.width, collider.display.height)
-    collider.fixture = love.physics.newFixture(collider.body, collider.shape)
-    collider.fixture:setUserData("Block")
+  addStartingBlock(environment.screenWidth/6 - environment.screenWidth/12, environment.screenHeight/2 + environment.screenHeight/4)
+  addFloor(environment.screenWidth/2, environment.screenHeight - environment.screenHeight/16)
+  addBar(400,100)
+end
+
+function environment:update()
+
 end
 
 function environment:draw()
   love.graphics.setColor(150, 150, 150)
-  love.graphics.polygon("fill", collider.body:getWorldPoints(collider.shape:getPoints()))
-  love.graphics.polygon("fill", floor.body:getWorldPoints(floor.shape:getPoints()))
-  love.graphics.polygon("fill", startingBlock.body:getWorldPoints(startingBlock.shape:getPoints()))
+  for i = 1, #bar do
+    love.graphics.polygon("fill", bar[i].body:getWorldPoints(bar[i].shape:getPoints()))
+  end
+  for i = 1, #floor do
+    love.graphics.polygon("fill", floor[i].body:getWorldPoints(floor[i].shape:getPoints()))
+  end
+  for i = 1, #startingBlock do
+    love.graphics.polygon("fill", startingBlock[i].body:getWorldPoints(startingBlock[i].shape:getPoints()))
+  end
 end
 
 function environment:init()
