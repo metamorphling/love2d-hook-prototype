@@ -1,12 +1,11 @@
 require "collision"
+require "level_generator"
 
 environment = {}
 
 environment.screenWidth = love.graphics.getWidth( )
 environment.screenHeight = love.graphics.getHeight( )
 environment.screenCenter = { x = environment.screenWidth/2, y = environment.screenHeight/2 }
-
-
 
 function environment:initWorld()
   world = love.physics.newWorld(0, 200, true) 
@@ -17,7 +16,7 @@ function environment:initWorld()
   persisting = 0
 end
 
-function addBlock(display, objType)
+function environment:addBlock(display, objType)
   local obj = {}
   obj.display = display
   obj.body = love.physics.newBody(world, obj.display.x ,obj.display.y, "static")
@@ -37,23 +36,34 @@ function addBlock(display, objType)
   end
 end
 
-function addStartingBlock(x,y)
+function environment:addStartingBlock(x,y)
     local display = {x=x, y=y, width=environment.screenWidth/6, height=environment.screenHeight/2}
-    addBlock(display, "Floor")
+    environment:addBlock(display, "StartingBlock")
 end
 
-function addFloor(x,y)
+function environment:addFloor(x,y)
     local display = {x=x, y=y, width=environment.screenWidth, height=environment.screenHeight/8}
-    addBlock(display, "StartingBlock")
+    environment:addBlock(display, "Floor")
 end
 
-function addBar(x,y)
-    local display = {x=400, y=100, width=50, height=10}
-    addBlock(display, "Bar")
+function environment:addBar(x,y,w)
+    local display = {x=x, y=y, width=w, height=10}
+    environment:addBlock(display, "Bar")
 end
 
-function destroyBlock(blockType, i)
-  
+function environment:destroyBlock(blockType, i)
+  if blockType == "Floor" then
+ --   floor[i].body:destroy()
+    table.remove(floor, i)
+  end
+  if blockType == "StartingBlock" then
+ --   startingBlock[i].body:destroy()
+    table.remove(startingBlock, i)
+  end
+  if blockType == "Bar" then
+ --   bar[i].body:destroy()
+    table.remove(bar, i)
+  end
 end
 
 function environment:initObjects()
@@ -61,13 +71,16 @@ function environment:initObjects()
   floor = {}
   bar = {}
   
-  addStartingBlock(environment.screenWidth/6 - environment.screenWidth/12, environment.screenHeight/2 + environment.screenHeight/4)
-  addFloor(environment.screenWidth/2, environment.screenHeight - environment.screenHeight/16)
-  addBar(400,100)
+  environment:addStartingBlock(environment.screenWidth/6 - environment.screenWidth/12, environment.screenHeight/2 + environment.screenHeight/4)
+  level_generator:addNextScreen()
+  level_generator:addNextScreen()
 end
 
 function environment:update()
-
+    if camera.x > level_generator.nextScreenTrigger then
+      level_generator:destroyScreen()
+      level_generator:addNextScreen()
+    end
 end
 
 function environment:draw()

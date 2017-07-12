@@ -9,4 +9,5 @@ function configuration:init()
   else
     hostSystem = "PC"
   end
+  math.randomseed(os.time())
 end
