@@ -21,6 +21,10 @@ function shoot:cutRope()
     joint:destroy()
     joint = nil
   end
+  if bullets.body then
+    bullets.body:destroy()
+    bullets.body = nil
+  end
 end
 
 function shoot:joinRope()
@@ -32,15 +36,13 @@ function shoot:joinRope()
   local playerY = player.body:getY()
   local cathetusX, cathetusY = common:getCathetus(playerX, targetX, playerY, targetY)
   local ropeLength = math.sqrt ( cathetusX * cathetusX + cathetusY * cathetusY )
-  joint = love.physics.newRopeJoint( player.body, grapple.fixture:getBody(), playerX, playerY, targetX, targetY, ropeLength, true )
+  joint = love.physics.newDistanceJoint( player.body, grapple.fixture:getBody(), playerX, playerY, targetX, targetY, ropeLength, true )
 end
 
 function shoot:draw()
   love.graphics.setColor(128, 128, 128)
   if bullets.body then
-    if not bullets.body:isDestroyed() then
-      love.graphics.line(player.body:getX(), player.body:getY(), bullets.body:getX(), bullets.body:getY())
-    end
+    love.graphics.line(player.body:getX(), player.body:getY(), bullets.body:getX(), bullets.body:getY())
   end
 end
 
@@ -53,7 +55,7 @@ end
 function shoot:shoot()
   --Consider world translation when using mouse click position
   local mouseX,mouseY = camera:mousePosition()
-	local startX,startY = player.body:getX() + player.display.width / 2, player.body:getY() + player.display.height / 2
+	local startX,startY = player.body:getX() + player.display.width / 2, player.body:getY() - player.display.height / 2
 	local angle = math.atan2((mouseY - startY), (mouseX - startX))
   local scale = love.physics.getMeter()
     
@@ -69,7 +71,10 @@ function shoot:shoot()
 	local bulletDx = shoot.bulletSpeed * math.cos(angle) * 0.8
 	local bulletDy = shoot.bulletSpeed * math.sin(angle) * 0.8
  
- 	table.insert(bullets.pos, {x = startX, y = startY, dx = bulletDx, dy = bulletDy})
+ 	bullets.pos.x = startX
+  bullets.pos.y = startY
+  bullets.pos.dx = bulletDx
+  bullets.pos.dy = bulletDy
     
   bullets.display = {x=startX, y=startY, d=5}
   bullets.body = love.physics.newBody(world, bullets.display.x, bullets.display.y, "dynamic")
@@ -78,4 +83,5 @@ function shoot:shoot()
   bullets.fixture:setGroupIndex(configuration.playerGroup)
   bullets.fixture:setUserData("Bullet")
   bullets.body:applyLinearImpulse( bulletDx, bulletDy )
+  print("shooting!")
 end

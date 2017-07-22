@@ -28,6 +28,6 @@ function love.update(dt)
   camera:update(dt)
   shoot:processHook()
   world:update(dt)
-  controls:keyBoardPress()
+  controls:checkInput()
   environment:update()
 end

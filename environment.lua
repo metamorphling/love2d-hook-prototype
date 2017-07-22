@@ -8,7 +8,7 @@ environment.screenHeight = love.graphics.getHeight( )
 environment.screenCenter = { x = environment.screenWidth/2, y = environment.screenHeight/2 }
 
 function environment:initWorld()
-  world = love.physics.newWorld(0, 200, true) 
+  world = love.physics.newWorld(0, 400, true) 
   world:setCallbacks(beginContact, endContact, preSolve, postSolve)
   
   love.physics.setMeter(30)

@@ -5,23 +5,19 @@ function beginContact(a, b, coll)
     print(a:getUserData().." colliding with "..b:getUserData().." with a vector normal of: "..x..", "..y)
     if a:getUserData() == "Bullet" then
       print("destroy")
-     -- a:getBody():destroy()
-    --  a:getBody():setType("static")
-        a:getBody():setAwake( false )
-        a:getBody():setGravityScale( 0 )
+      a:getBody():setAwake( false )
+      a:getBody():setGravityScale( 0 )
     end
     if b:getUserData() == "Bullet" then 
       print("destroy")
-    --  b:getBody():destroy()
-   --  b:getBody():setType("static")
       b:getBody():setAwake( false )
       b:getBody():setGravityScale( 0 )
     end
-    if a:getUserData() == "Bar" then
+    if a:getUserData() == "Bar" and b:getUserData() == "Bullet" then
       print("grapple")
       grapple = {grappled = true, fixture = a}
     end
-    if b:getUserData() == "Bar" then 
+    if b:getUserData() == "Bar" and a:getUserData() == "Bullet" then 
       print("grapple")
       grapple = {grappled = true, fixture = b}
     end
